@@ -1,12 +1,7 @@
-import io from "socket.io-client"
 import React, { useState, useContext, useEffect } from "react"
 
-const socket = io('ws://localhost:8000', {auth: {
-    token: '123'
-    }
-})
 
-function ChatsMain ({userName}) {
+function ChatsMain ({userName, socket}) {
     const [chats, setChats] = useState([])
     const [myMessage, setMyMessage] = useState('')
 

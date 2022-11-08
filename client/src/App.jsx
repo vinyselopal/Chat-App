@@ -1,5 +1,5 @@
+import io from "socket.io-client"
 import React, {useState} from "react"
-import { SocketContext, socket} from "./context/socket"
 import {
     BrowserRouter as Router,
     Routes,
@@ -10,6 +10,16 @@ import {
 import "./styles/index.css"
 import ChatsPage from "./pages/ChatsPage" 
 import HomePage from "./pages/HomePage"
+
+const socket = io('ws://localhost:8000', {auth: {
+    token: '123'
+    }
+})
+
+socket.onAny((event, ...args) => {
+    console.log(event, args)
+})
+
 const App = () => {
     const user = localStorage.getItem('userName')
     const [userName, setUserName] = useState(user ? user : "")
@@ -17,7 +27,7 @@ const App = () => {
         <>
         <Routes>
             <Route path="/" element={<HomePage setUserName={setUserName}/>} />
-            <Route path="/chats" element={<ChatsPage userName={userName} setUserName={setUserName}/>} />
+            <Route path="/chats" element={<ChatsPage userName={userName} setUserName={setUserName} socket={socket}/>} />
         </Routes>
             
         {/* {

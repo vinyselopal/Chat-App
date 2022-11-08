@@ -4,14 +4,14 @@ import ChatsSidePanel from "../components/ChatsSidePanel.jsx"
 import ChatsMain from "../components/ChatsMain.jsx"
 
 
-const ChatRoom = ({userName}) => {
+const ChatRoom = ({userName, socket}) => {
     
 
     return (
         <div>
             <ChatsHeader />
             <ChatsSidePanel />
-            <ChatsMain userName={userName}/>
+            <ChatsMain userName={userName} socket={socket}/>
             
             
         </div>  
