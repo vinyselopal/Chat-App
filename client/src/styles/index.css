@@ -1,0 +1,37 @@
+body {
+    background-color: coral;
+}
+
+.home-tabs {
+    background-color: grey;
+}
+
+.chats-header {
+    background-color: white;
+}
+
+#chats-searchbar {
+    background-color: yellow;
+    display: inline
+
+}
+#chats-notifications {
+    background-color: blue;
+    display: inline
+}
+
+#chats-menu {
+    background-color: pink;
+    display: inline
+
+}
+
+#chats-title {
+    background-color: teal;
+    display: inline
+
+}
+
+#chats-main-list {
+    list-style-type: none;
+}
