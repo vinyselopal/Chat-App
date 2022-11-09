@@ -8,8 +8,8 @@ import {
 
 const SignUp = ({setUserName}) => {
     async function signupHandler (event) {
-        const userName = document.getElementById('userName').value
-        const password = document.getElementById('password').value
+        const userName = document.getElementById('signup-userName').value
+        const password = document.getElementById('signup-password').value
         console.log(userName, password)
         const response = await fetch(
           'http://localhost:8000/api/register',

@@ -1,5 +1,5 @@
 import io from "socket.io-client"
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import {
     BrowserRouter as Router,
     Routes,
@@ -16,18 +16,34 @@ const socket = io('ws://localhost:8000', {auth: {
     }
 })
 
-socket.onAny((event, ...args) => {
-    console.log(event, args)
-})
+
 
 const App = () => {
     const user = localStorage.getItem('userName')
     const [userName, setUserName] = useState(user ? user : "")
+    const [userNameAlreadySelected, setUserNameAlreadySelected] = useState(false)
+
+    useEffect(() => {
+        socket.onAny((event, ...args) => {
+            console.log(event, args)
+        })
+        
+        socket.on("connect_error", (err) => {
+            if (err.message === "invalid username") {
+                setUserNameAlreadySelected(false)
+            }
+        })
+
+        
+        return () => {
+            socket.off("connect_error")
+        }
+    }, [])
     return (
         <>
         <Routes>
-            <Route path="/" element={<HomePage setUserName={setUserName}/>} />
-            <Route path="/chats" element={<ChatsPage userName={userName} setUserName={setUserName} socket={socket}/>} />
+            <Route path="/" element={<HomePage setUserName={setUserName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected}/>} />
+            <Route path="/chats" element={<ChatsPage userName={userName} setUserName={setUserName} socket={socket}setUserNameAlreadySelected={setUserNameAlreadySelected} usernameAlreadySelected={userNameAlreadySelected}/>} />
         </Routes>
             
         {/* {

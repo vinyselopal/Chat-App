@@ -25,14 +25,42 @@ const io = socketio(http, {
 })
 
 initDB()
-
+io.use((socket, next) => {
+  const userName = socket.handshake.auth.userName
+  if (!userName) {
+    return next(new Error("invalid username"))
+  }
+  socket.userName = userName
+  next() 
+})
 io.on('connection', async (socket) => {
+
   console.log('a user connected')
 
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.userName,
+    })
+  } // adding userInfo for searching up in client
+  
+  io.emit("user connected", {
+    userID: socket.id,
+    userName: socket.userName
+  })
+
+  socket.emit("users", users)
   const messages = await getMessagesFn()
   io.emit('messages', messages)
   console.log('after fetching all the messages')
 
+  socket.on("private message", ({content, to}) => {
+    socket.to(to).emit("private message", {
+      content,
+      from: socket.id
+    })
+  })
   socket.on('message', (msg) => {
     console.log('new message', msg)
 

@@ -2,8 +2,8 @@ const { getUser, checkUserName } = require('./database/queries')
 const { pool } = require('./database/init')
 const { getMessagesQuery, insertMessageQuery } = require('./database/queries')
 
-function validatePassword (body) {
-  if (body.password.length < 8) return 'invalid' // semantic meaning not the job
+function validatePassword (password) {
+  if (password.length < 8) return 'invalid' // semantic meaning not the job
   return 'valid'
 }
 

@@ -4,14 +4,14 @@ import ChatsSidePanel from "../components/ChatsSidePanel.jsx"
 import ChatsMain from "../components/ChatsMain.jsx"
 
 
-const ChatRoom = ({userName, socket}) => {
+const ChatRoom = ({userName, socket, setUserNameAlreadySelected, usernameAlreadySelected}) => {
     
 
     return (
-        <div>
-            <ChatsHeader />
+        <div id="chatsPage">
+            <ChatsHeader/>
             <ChatsSidePanel />
-            <ChatsMain userName={userName} socket={socket}/>
+            <ChatsMain userName={userName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} usernameAlreadySelected={usernameAlreadySelected}/>
             
             
         </div>  

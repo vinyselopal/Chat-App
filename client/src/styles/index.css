@@ -35,3 +35,11 @@ body {
 #chats-main-list {
     list-style-type: none;
 }
+
+#chats-side {
+    display:inline
+}
+
+#chats-main {
+    display: inline
+}

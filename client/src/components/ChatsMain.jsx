@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from "react"
 
 
-function ChatsMain ({userName, socket}) {
+function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlreadySelected}) {
     const [chats, setChats] = useState([])
     const [myMessage, setMyMessage] = useState('')
-
+    const [users, setUsers] = useState([])
     function setMessage (event) {
         setMyMessage(() => event.target.value)
         console.log(myMessage)
@@ -23,16 +23,38 @@ function ChatsMain ({userName, socket}) {
         socket.emit('message', messageObj)
         event.target.value = ''
     }
-
+    function privateMessaging () {
+        const userName = 'b'
+        const user = users.filter(a => a.userName = userName)[0]
+        if (user) {
+            socket.emit("private message", {
+                content: 'hi',
+                to: user.userID
+            })
+        }
+    }
+    privateMessaging()
 
     
     useEffect(
         () => {
+                socket.auth = {userName}
+                setUserNameAlreadySelected(() => true)
 
-                socket.on("connection", () => {
+                socket.connect()
+
+                socket.on("connect", () => {
                     console.log('socket connected')
                 })
-        
+
+                socket.on("user connected", (user) => {
+                    // initReactiveProperties(user)
+                    setUsers(() => [...users, user])
+                })
+                socket.on("users", (users) => {
+                    console.log("users", users) // users will have current user as well, due to io.emit('users')
+                    setUsers(() => users)
+                })
                 socket.on('message', message => {
                     console.log('message', message)
                     message = `${message.userName} said ${message.message} at ${message.timeStamp}`
@@ -44,14 +66,18 @@ function ChatsMain ({userName, socket}) {
                     setChats(chats => messages)
                 })
             
+                socket.on('private message', ({content, from}) => {
+                    console.log({content, from})
+                })
             
             return () => {
+                socket.off("users")
                 socket.off('message')
                 socket.off('messages')
             }
         },  [])
     return (
-        <>
+        <div id="chats-main">
             <div id="chats-main-header">
                 <div id="chats-main-peerName">Here goes their name</div>
                 <button id="chats-main-peerProfile">their image</button>
@@ -67,7 +93,7 @@ function ChatsMain ({userName, socket}) {
                 <input type="text" onChange={setMessage} onKeyDown={sendMessage} placeholder="Say something nice.."/>
             </div>
             
-        </>
+        </div>
     )
 }
 
