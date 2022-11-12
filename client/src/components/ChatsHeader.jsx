@@ -12,7 +12,7 @@ function ChatsHeader ({setUserName, socket, userName}) {
 
     return (
         <div className="chats-header">
-            <div id="chats-searchbar">search</div>
+            {/* <div id="chats-searchbar">search</div> */}
             <h3 id="chats-header-title">Chat Box</h3>
             <button className="buttons" value="logout" id="logout" onClick={handleLogout}>logout</button>
 
