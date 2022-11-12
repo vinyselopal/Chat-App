@@ -30,21 +30,46 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
             timestamp: parsedTime,
             user_name: userName
         }
-    
+        const chatterName = users.find(a => a.userName === currentChat).userName
         socket.emit('private message', {content: messageObj, to: users.find(a => a.userName === currentChat).userID})
+        
+
+        const allChats = JSON.parse(localStorage.getItem('allChats'))
+        console.log(allChats)
+        let chatObj = allChats.find(a => a.chatter === chatterName) || {chat: [], chatter: chatterName} // set chatter of all chats
+        console.log('chatObj', chatObj)
+        chatObj = {...chatObj, chat: [...chatObj.chat, messageObj]}
+        const filteredAllChats = allChats.filter(a => a.chatter !== chatterName)
+
+        const preAllChats = [...filteredAllChats, chatObj]
+        console.log('pre changing all chats', preAllChats)
+
+        setAllChats(() => {
+            return preAllChats
+        })
+
+        setChats([...chats, messageObj])
         event.target.value = ''
     }
     useEffect( () => {
+        const getAllChats = JSON.parse(localStorage.getItem('allChats'))
         setChats(() => {
-            const chatObj = allChats ? allChats.find(a => a.chatter === currentChat) : null
+            let chatObj = getAllChats ? getAllChats.find(a => a.chatter === currentChat) : null
             return chatObj ? chatObj.chat : []
             
         })
     }, [currentChat]) // removed allChats from dependencies riskily
 
+
     useEffect(() => {
         localStorage.setItem('chats', JSON.stringify(chats))
+        console.log(chats)
     }, [chats])
+
+    useEffect(() => {
+        localStorage.setItem('allChats', JSON.stringify(allChats))
+    }, [allChats])
+
     useEffect(
         () => {
                 socket.auth = {userName}
@@ -90,6 +115,7 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
                     localStorage.setItem('users', JSON.stringify(users))
                 })
                 socket.on('message', message => {
+                    const allChats = JSON.parse(localStorage.getItem('allChats'))
                     const getChats = JSON.parse(localStorage.getItem('chats' || []))
                     console.log('message', message)
                     setChats([...getChats, message])
@@ -101,29 +127,39 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
                     localStorage.setItem('allChats', JSON.stringify(allChats))
                 })
                 socket.on('messages', messages => {
-
-                    setAllChats((allChats) => [...allChats, {chatter: 'general', chat: messages}])
-                    localStorage.setItem('allChats', JSON.stringify(allChats))
-                    setChats(() => messages)
+                    console.log('messages event')
+                    const getAllChats = JSON.parse(localStorage.getItem('allChats'))
+                    console.log('allChats on messages event', getAllChats)
+                    if (!getAllChats.length) {
+                        console.log('getAllChats is empty')
+                        setAllChats(() => [{chatter: 'general', chat: messages}])
+                    }
+                    else {3
+                        setAllChats((allChats) => [...allChats, {chatter: 'general', chat: messages}])
+                    }
+                    
                 })
             
                 socket.on('private message', ({content, from}) => {
                     console.log({content, from})
+                    const users = JSON.parse(localStorage.getItem('users'))
                     const chatterObj = users.find(a => a.userID === from)
                     const chatterName = chatterObj.userName
-
-                    let chatObj = allChats ? allChats.find(a => a.chatter === chatterName) : null // set chatter of all chats
+                    const allChats = JSON.parse(localStorage.getItem('allChats'))
+                    console.log(allChats)
+                    let chatObj = allChats.find(a => a.chatter === chatterName) || {chat: [], chatter: chatterName} // set chatter of all chats
                     console.log('chatObj', chatObj)
-                    if (chatObj === null) console.log('chatObj is null')
-                    chatObj = chatObj.chat ? {...chatObj, chat: [...chat, content]} : {chat: [content], chatter: chatterName}
+                    chatObj = {...chatObj, chat: [...chatObj.chat, content]}
                     const filteredAllChats = allChats.filter(a => a.chatter !== chatterName)
 
+                    const preAllChats = [...filteredAllChats, chatObj]
+                    console.log('pre changing all chats', preAllChats)
+
                     setAllChats(() => {
-                        const preAllChats = [...filteredAllChats, chatObj]
-                        console.log('pre changing all chats', preAllChats)
                         return preAllChats
                     })
-                    localStorage.setItem('allChats', JSON.stringify(allChats))
+
+                    if (currentChat === chatterName) setChats([...chats, content])
                     console.log(allChats)
                 })
             
@@ -148,7 +184,12 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
             <div id="chats-main-window">
                 <ul id="chats-main-list">
                     {chats ? chats.map((msg, index) => {
-                        return <li key={index} id="message"><div id="msg-upper"><div id="user_name"><p id="user_name-text">{msg.user_name}</p></div><div id="msg"><p id="msg-text">{msg.message}</p></div></div><div id="msg-lower"><div>{msg.timestamp}</div></div></li>
+                        if (msg.user_name === userName) {
+                            return <li key={index} id="message"><div id="msg-self-upper"><div id="user_name"><p id="user_name-text">{msg.user_name}</p></div><div id="msg"><p id="msg-text">{msg.message}</p></div></div><div id="msg-self-lower"><div>{msg.timestamp}</div></div></li>
+                        }
+                        else {
+                            return <li key={index} id="message"><div id="msg-upper"><div id="user_name"><p id="user_name-text">{msg.user_name}</p></div><div id="msg"><p id="msg-text">{msg.message}</p></div></div><div id="msg-lower"><div>{msg.timestamp}</div></div></li>
+                        }
                     }) : null}
                 </ul>
             </div>

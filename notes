@@ -1,15 +1,13 @@
--- look at source codes for CSS reference
+
+
 -- good data model
 -- think about using views, joins, maps, functions, triggers and procedures, normalization, and good queries, transactions, indices
 
 -- real time synchronization, dealing with data loss while sending message, channels, joining tables with foreign key. 
--- keep schema and make table queries modularized.
--- store user-name and password and link the user name to messaging table
 -- multiple chat rooms and selective broadcasting
 
 -- messages should load on start from server
 -- ids should not change with new connection. Storing usernames would be better.
--- time stamps say time not numeric string
 -- register users and store userid to verify with every connection
 
 

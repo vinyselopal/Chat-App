@@ -1,5 +1,6 @@
 import {useState} from "react"
 
+
 function ChatsSidePanel ({ users, userName, socket, setUserNameAlreadySelected, userNameAlreadySelected, currentChat, setCurrentChat }) {
     const [peerIcon, setPeerIcon] = useState(null)
     function displayPeerIcon (event) {
@@ -11,6 +12,7 @@ function ChatsSidePanel ({ users, userName, socket, setUserNameAlreadySelected, 
     function createPeerWindow (chatter) {
         setCurrentChat(() => chatter)
     }
+    
     return (
         <div id="chats-side">
             <input id="chats-side-searchUser" type="text" placeholder="searchUser" onChange={displayPeerIcon}/>
