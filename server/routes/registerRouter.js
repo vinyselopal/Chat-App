@@ -10,7 +10,6 @@ const saltRounds = 10
 registerRouter.post('/', async (req, res) => {
 
   const checkedUser = await validateUserName(req.body.userName)
-  console.log('checkedUser', checkedUser)
 
   if (!checkedUser) {
     res.status(400).json('user already exists')

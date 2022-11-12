@@ -14,7 +14,6 @@ async function validateUserName (user_name) {
 async function loginCreds (body) {
   const response = await pool.query(getUser, [body.userName])
   const creds = response.rows // send cookies rather than creds to front end
-  console.log(creds[0])
   return creds[0] // unique constraint on user name
 }
 
@@ -24,6 +23,6 @@ async function getMessagesFn () {
 }
 
 async function insertMessageFn (msg) {
-  await pool.query(insertMessageQuery, [msg.message, msg.timeStamp, msg.userName])
+  await pool.query(insertMessageQuery, [msg.message, msg.timestamp, msg.user_name])
 }
 module.exports = { validatePassword, loginCreds, getMessagesFn, insertMessageFn, validateUserName }

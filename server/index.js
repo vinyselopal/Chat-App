@@ -34,14 +34,15 @@ io.use((socket, next) => {
   next() 
 })
 io.on('connection', async (socket) => {
-
-  console.log('a user connected')
+  socket.join(socket.id)
+  console.log('a user connected', socket.id)
 
   const users = [];
   for (let [id, socket] of io.of("/").sockets) {
+    if (users.find(a => a.userName === socket.userName)) continue
     users.push({
       userID: id,
-      username: socket.userName,
+      userName: socket.userName,
     })
   } // adding userInfo for searching up in client
   
@@ -53,7 +54,6 @@ io.on('connection', async (socket) => {
   socket.emit("users", users)
   const messages = await getMessagesFn()
   io.emit('messages', messages)
-  console.log('after fetching all the messages')
 
   socket.on("private message", ({content, to}) => {
     socket.to(to).emit("private message", {
@@ -61,8 +61,11 @@ io.on('connection', async (socket) => {
       from: socket.id
     })
   })
+  socket.on('user disconnected', (userName) => {
+    users.filter(a => a.userName !== userName)
+    socket.emit('new users', users)
+  })
   socket.on('message', (msg) => {
-    console.log('new message', msg)
 
     insertMessageFn(msg)
     io.emit('message', msg)

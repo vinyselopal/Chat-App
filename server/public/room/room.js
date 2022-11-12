@@ -17,7 +17,6 @@ socket.on('message', text => {
 })
 
 socket.on('messages', messages => {
-  console.log('messages', messages)
   let listElems = ''
   messages = messages.map(msg => `${msg.user_name} said ${msg.message} at ${msg.timestamp}`) // client side
 

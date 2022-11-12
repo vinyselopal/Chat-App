@@ -1,22 +1,22 @@
 import { useNavigate } from "react-router-dom"
 
-function ChatsHeader () {
+function ChatsHeader ({setUserName, socket, userName}) {
     const navigate = useNavigate()
     async function handleLogout () {
         const response = await fetch('http://localhost:8000/api/logout')
-        localStorage.setItem('userName', null)
+        setUserName("")
+        localStorage.clear()
+        socket.emit("user disconnected", userName)
         navigate('/')
       }
 
     return (
         <div className="chats-header">
             <div id="chats-searchbar">search</div>
-            <div id="chats-title">Chatter-G</div>
+            <h3 id="chats-header-title">Chat Box</h3>
             <div id="chats-notifications">notif</div>
-            <div id="chats-menu">menu
-            <button value="logout" onClick={handleLogout}>logout</button>
+            <button className="buttons" value="logout" id="logout" onClick={handleLogout}>logout</button>
 
-            </div>
 
         </div>
     )

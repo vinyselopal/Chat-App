@@ -21,12 +21,10 @@ const SignIn = ({setUserName, socket, setUserNameAlreadySelected}) => {
           })
       
         const creds = await response.json()
-        console.log(creds)
         if (response.status === 200) {
 
-          setUserName(creds.user_name)
-
-          localStorage.setItem('userName', creds.user_name)
+          setUserName(() => creds.user_name)
+          localStorage.setItem('userName', JSON.stringify(creds.user_name))
           navigate('/chats')
 
         } else {

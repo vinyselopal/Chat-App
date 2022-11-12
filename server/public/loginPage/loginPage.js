@@ -9,7 +9,6 @@ async function loginHandler () {
     })
 
   const creds = await response.json()
-  console.log(creds)
   if (response.status === 200) {
     window.location.href = `http://localhost:8000/static/room/?user_id=${creds.user_id}&user_name=${creds.user_name}`
   } else {

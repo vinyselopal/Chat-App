@@ -10,7 +10,6 @@ const SignUp = ({setUserName}) => {
     async function signupHandler (event) {
         const userName = document.getElementById('signup-userName').value
         const password = document.getElementById('signup-password').value
-        console.log(userName, password)
         const response = await fetch(
           'http://localhost:8000/api/register',
           {
@@ -19,7 +18,6 @@ const SignUp = ({setUserName}) => {
             body: JSON.stringify({ userName, password })
           }
         )
-      console.log(response)
         const message = await response.json()
         if (response.ok) window.location.href = 'http://localhost:8000/static/login_page'
         else {
