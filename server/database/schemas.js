@@ -1,4 +1,4 @@
-const usersSchema = '"user_name" text, user_password text, user_id SERIAL NOT NULL'
-const messagesSchema = 'message text, timestamp text, user_name text'
-
-module.exports = { usersSchema, messagesSchema }
+const usersSchema = 'user_id integer PRIMARY KEY, user_password VARCHAR (255), user_name VARCHAR (255)'
+const roomsSchema = 'room_id integer PRIMARY KEY, user_id integer REFERENCES users(user_id)'
+const messagesSchema = 'message VARCHAR (255), room_id integer REFERENCES rooms(room_id), user_id integer REFERENCES users(user_id), timestamp VARCHAR (255)'
+module.exports = { usersSchema, messagesSchema, roomsSchema }

@@ -1,5 +1,5 @@
 const { Pool } = require('pg')
-const { createUsersTable, createMessagesTable } = require('./queries')
+const { createUsersTable, createMessagesTable, createRoomsTable } = require('./queries')
 
 const pool = new Pool({
   user: 'postgres',
@@ -10,6 +10,7 @@ const pool = new Pool({
 
 async function initDB () {
   await pool.query(createUsersTable)
+  await pool.query(createRoomsTable)
   await pool.query(createMessagesTable)
 }
 
