@@ -8,7 +8,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
     function setMessage (event) {
         setMyMessage(() => event.target.value)
     } 
-    
+    ``
     function sendGeneralMessage (event) {
         if (event.key !== 'Enter') return
         const timeStamp = new Date()
@@ -18,7 +18,9 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
             message: myMessage,
             timestamp: parsedTime,
             user_id: userID,
-            user_name: userName
+            user_name: userName,
+            room_id: 'general',
+            recipient: 0
         }
         socket.emit('message', messageObj)
         event.target.value = ''
@@ -27,13 +29,20 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
         if (event.key !== 'Enter') return
         const timeStamp = new Date()
         const parsedTime = timeStamp.toLocaleTimeString().split(' ')[0]
+        const recipient = users.find(a => a.userName === currentChat)
+        console.log('recipient', recipient)
+        const roomID = `${userID}:${recipient.userID}`
+
         const messageObj = {
             message: myMessage,
             timestamp: parsedTime,
-            user_name: userName
+            user_name: userName,
+            user_id: userID,
+            room_id: roomID,
+            recipient: recipient.userID
         }
         const chatterName = users.find(a => a.userName === currentChat).userName
-        socket.emit('private message', {content: messageObj, to: users.find(a => a.userName === currentChat).socketID})
+        socket.emit('private message', {content: messageObj, userID: recipient.userID})
         
 
         const allChats = JSON.parse(localStorage.getItem('allChats'))
@@ -136,7 +145,18 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                     console.log('allChats on messages event', getAllChats)
                     if (!getAllChats.length) {
                         console.log('getAllChats is empty')
-                        setAllChats(() => [{chatter: 'general', chat: messages}])
+
+                        const generalMessages = {chatter: 'general', chat: messages.filter(a => a.room_id === 'general')}
+                        const restMessages = messages.filter(a => a.room_id !== 'general')
+                        const tempArr = []
+                        for (let message of messages) {
+                            const chatterObj = tempArr.find(obj => obj.chatter === message.user_name)
+                            if (chatterObj) chatterObj.chat.push(message)
+                            else tempArr.push({chatter: message.user_name, chat: [message]})
+
+                        }
+                        console.log('tempArr', tempArr)
+                        setAllChats(() => [generalMessages, ...tempArr])
                     }
                     else {
                         setAllChats((allChats) => [...allChats, {chatter: 'general', chat: messages}])
@@ -147,7 +167,8 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                 socket.on('private message', ({content, from}) => {
                     console.log({content, from})
                     const users = JSON.parse(localStorage.getItem('users'))
-                    const chatterObj = users.find(a => a.socketID === from)
+                    console.log(users)
+                    const chatterObj = users.find(a => a.userName=== from)
                     const chatterName = chatterObj.userName
                     const allChats = JSON.parse(localStorage.getItem('allChats'))
                     console.log(allChats)

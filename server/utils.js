@@ -28,6 +28,6 @@ async function getMessagesFn () {
 }
 
 async function insertMessageFn (msg) {
-  await pool.query(insertMessageQuery, [msg.message, msg.timestamp, msg.user_id])
+  await pool.query(insertMessageQuery, [msg.message, msg.timestamp, msg.user_id, msg.room_id, msg.user_name, msg.recipient])
 }
 module.exports = { validatePassword, loginCreds, getMessagesFn, insertMessageFn, validateUserName }

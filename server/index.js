@@ -63,13 +63,25 @@ io.on('connection', async (socket) => {
 
   socket.emit("users", users)
   const messages = await getMessagesFn()
-  io.emit('messages', messages)
+  console.log('messages', messages)
 
-  socket.on("private message", ({content, to}) => {
+  for (user of users) {
+    const messagesForCurrentUser = messages.filter(msg => msg.user_name === user.userName || msg.recipient === user.userID || msg.room_id === 'general')
+
+    console.log("current user", user, "messagesForCurrentUser", messagesForCurrentUser)
+    socket.to(user.socketID).emit('messages', messagesForCurrentUser, 'hi')
+  }
+  // io.emit('messages', messages)
+
+  socket.on("private message", ({content, userID}) => {
+    console.log("priv to", userID)
+    to = users.find(a => a.userID ===userID).socketID
     socket.to(to).emit("private message", {
       content,
-      from: socket.id
+      from: socket.userName
     })
+
+    insertMessageFn(content)
   })
   socket.on('disconnect', () => {
     console.log('users on disconnection', users)
