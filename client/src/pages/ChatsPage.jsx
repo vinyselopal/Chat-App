@@ -11,7 +11,7 @@ const ChatRoom = ({userID, setUserID, userName, setUserName, socket, setUserName
             <ChatsHeader userID={userID} setUserID={setUserID} setUserName={setUserName} socket={socket} userName={userName}/>
             <div id="chats-lower-window">
             <ChatsSidePanel userID={userID} setUserID={setUserID} userName={userName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} usernameAlreadySelected={usernameAlreadySelected} users={users} setUsers={setUsers} currentChat={currentChat} setCurrentChat={setCurrentChat}/>
-            <ChatsMain userID={userID} setUserID={setUserID} userName={userName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} usernameAlreadySelected={usernameAlreadySelected} users={users} setUsers={setUsers} currentChat={currentChat} setCurrentChat={setCurrentChat}/>
+            <ChatsMain userID={userID} setUserName={setUserName} setUserID={setUserID} userName={userName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} usernameAlreadySelected={usernameAlreadySelected} users={users} setUsers={setUsers} currentChat={currentChat} setCurrentChat={setCurrentChat}/>
             </div>
             
         </div>  

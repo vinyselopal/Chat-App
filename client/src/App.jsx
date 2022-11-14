@@ -11,9 +11,8 @@ import "./styles/index.css"
 import ChatsPage from "./pages/ChatsPage" 
 import HomePage from "./pages/HomePage"
 
-const socket = io('ws://localhost:8000', {auth: {
-    token: '123'
-    }
+const socket = io('ws://localhost:8000', {
+    autoConnect: false
 })
 
 
@@ -29,16 +28,13 @@ const App = () => {
     const [currentChat, setCurrentChat] = useState('general')
     useEffect(() => {
         
-        socket.on("connect_error", (err) => {
-            if (err.message === "invalid username") {
-                setUserNameAlreadySelected(false)
-            }
-        })
 
+
+        socket.onAny((event, ...args) => {
+            console.log(event, args);
+          });
         
-        return () => {
-            socket.off("connect_error")
-        }
+
     }, [])
     return (
         <>

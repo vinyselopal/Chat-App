@@ -28,6 +28,8 @@ const SignIn = ({setUserName, setUserID, socket, setUserNameAlreadySelected}) =>
           setUserID(() => creds.user_id)
           localStorage.setItem('userName', JSON.stringify(creds.user_name))
           localStorage.setItem('userID', JSON.stringify(creds.user_id))
+          setUserNameAlreadySelected(true)
+          console.log('after getting creds')
           navigate('/chats')
 
         } else {

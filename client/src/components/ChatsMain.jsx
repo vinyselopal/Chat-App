@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react"
 
 
-function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelected, setUserNameAlreadySelected, users, setUsers, currentChat, setCurrentChat}) {
+function ChatsMain ({userID, setUserName, setUserID, userName, socket, userNameAlreadySelected, setUserNameAlreadySelected, users, setUsers, currentChat, setCurrentChat}) {
     const [allChats, setAllChats] = useState(JSON.parse(localStorage.getItem('allChats')) || [])
     const [chats, setChats] = useState([])
     const [myMessage, setMyMessage] = useState('')
@@ -81,13 +81,33 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
         localStorage.setItem('allChats', JSON.stringify(allChats))
     }, [allChats])
 
+    // useEffect (() => {
+    //     console.log(userNameAlreadySelected)
+    //     if (!userNameAlreadySelected) {
+    //         console.log('not selected')
+    //         const userName = JSON.parse(localStorage.getItem('userName'))
+    //         const userID = JSON.parse(localStorage.getItem('userID'))
+    //         setUserName(userName)
+    //         setUserID(userID)
+    //         console.log(userName, userID)
+    //         socket.auth = {userName, userID}
+
+    //     }
+    // }, [userNameAlreadySelected])
     useEffect(
         () => {
-                console.log(socket.connected)
-                socket.auth = {userName, userID}
-                setUserNameAlreadySelected(() => true)
+            console.log('in useEffect')
+            const userName = JSON.parse(localStorage.getItem('userName'))
+            const userID = JSON.parse(localStorage.getItem('userID'))
+                    socket.auth = {userName, userID}
+                    console.log('hi', socket.auth.userName, socket.auth.userID)
 
-                socket.connect("connect_error", (error) => {
+            socket.connect()
+                socket.on("connect_error", (err) => {
+                    if (err.message === "invalid username") {
+                      setUserNameAlreadySelected(false)
+                      console.log('check userName')
+                    }
                 })
 
                 socket.on("connect", () => {
@@ -151,7 +171,13 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                         const restMessages = messages.filter(a => a.room_id !== 'general')
                         const tempArr = []
                         for (let message of messages) {
-                            const chatterObj = tempArr.find(obj => obj.chatter === message.user_name)
+                            let chatterObj
+                            if (message.user_name === userName) {
+                                chatterObj = tempArr.find(obj => obj.chatter === message.recipient)
+                            } else {
+                                chatterObj = tempArr.find(obj => obj.chatter === message.user_name)
+                            }
+
                             if (chatterObj) chatterObj.chat.push(message)
                             else tempArr.push({chatter: message.user_name, chat: [message]})
 
@@ -159,9 +185,9 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                         console.log('tempArr', tempArr)
                         setAllChats(() => [generalMessages, ...tempArr])
                     }
-                    else {
-                        setAllChats((allChats) => [...allChats, {chatter: 'general', chat: messages}])
-                    }
+                    // else {
+                    //     setAllChats((allChats) => [...allChats, {chatter: 'general', chat: messages}])
+                    // }
                     
                 })
             
@@ -197,9 +223,8 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                 socket.off('private message')
                 socket.off('connect')
                 socket.off('connect_error')
-                socket.off('disconnect')
             }
-        },  [users]) // added dependency users
+        },  [users, userNameAlreadySelected, userName, userID]) // added dependency users
     return (
         <div id="chats-main">
             <div id="chats-main-header">

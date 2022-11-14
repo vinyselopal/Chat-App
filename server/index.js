@@ -27,8 +27,8 @@ const io = socketio(http, {
 initDB()
 io.use((socket, next) => {
   console.log('io middleware')
-  const userName = socket.auth.userName
-  const userID = socket.auth.userID
+  const userName = socket.handshake.auth.userName
+  const userID = socket.handshake.auth.userID
   if (!userName) {
     console.log('in error if')
     return next(new Error("invalid username"))
@@ -72,7 +72,7 @@ io.on('connection', async (socket) => {
     console.log("current user", user, "messagesForCurrentUser", messagesForCurrentUser)
     socket.to(user.socketID).emit('messages', messagesForCurrentUser, 'hi')
   }
-  // io.emit('messages', messages)
+  io.emit('messages', messages)
 
   socket.on("private message", ({content, userID}) => {
     console.log("priv to", userID)
