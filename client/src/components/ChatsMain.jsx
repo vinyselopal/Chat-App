@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react"
 
 
-function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlreadySelected, users, setUsers, currentChat, setCurrentChat}) {
+function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelected, setUserNameAlreadySelected, users, setUsers, currentChat, setCurrentChat}) {
     const [allChats, setAllChats] = useState(JSON.parse(localStorage.getItem('allChats')) || [])
     const [chats, setChats] = useState([])
     const [myMessage, setMyMessage] = useState('')
@@ -13,9 +13,11 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
         if (event.key !== 'Enter') return
         const timeStamp = new Date()
         const parsedTime = timeStamp.toLocaleTimeString().split(' ')[0]
+        console.log('userID', userID)
         const messageObj = {
             message: myMessage,
             timestamp: parsedTime,
+            user_id: userID,
             user_name: userName
         }
         socket.emit('message', messageObj)
@@ -31,7 +33,7 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
             user_name: userName
         }
         const chatterName = users.find(a => a.userName === currentChat).userName
-        socket.emit('private message', {content: messageObj, to: users.find(a => a.userName === currentChat).userID})
+        socket.emit('private message', {content: messageObj, to: users.find(a => a.userName === currentChat).socketID})
         
 
         const allChats = JSON.parse(localStorage.getItem('allChats'))
@@ -72,7 +74,7 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
 
     useEffect(
         () => {
-                socket.auth = {userName}
+                socket.auth = {userName, userID}
                 setUserNameAlreadySelected(() => true)
 
                 socket.connect("connect_error", (error) => {
@@ -101,13 +103,15 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
                     else {
                         savedUser.userID = user.userID
                         const filteredUsers = users.filter(a => a.userName !== user.userName)
-                        setUsers(() => [...filteredUsers, savedUser])
+                        setUsers(() => [...filteredUsers, user])
+
                     }
                     localStorage.setItem('users', JSON.stringify(users))
 
                 })
 
                 socket.on('new users', (users) => {
+                    console.log('users on new users event')
                     setUsers(users)
                 })
                 socket.on("users", (users) => {
@@ -134,7 +138,7 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
                         console.log('getAllChats is empty')
                         setAllChats(() => [{chatter: 'general', chat: messages}])
                     }
-                    else {3
+                    else {
                         setAllChats((allChats) => [...allChats, {chatter: 'general', chat: messages}])
                     }
                     
@@ -143,7 +147,7 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
                 socket.on('private message', ({content, from}) => {
                     console.log({content, from})
                     const users = JSON.parse(localStorage.getItem('users'))
-                    const chatterObj = users.find(a => a.userID === from)
+                    const chatterObj = users.find(a => a.socketID === from)
                     const chatterName = chatterObj.userName
                     const allChats = JSON.parse(localStorage.getItem('allChats'))
                     console.log(allChats)
@@ -173,7 +177,7 @@ function ChatsMain ({userName, socket, userNameAlreadySelected, setUserNameAlrea
                 socket.off('connect_error')
                 socket.off('disconnect')
             }
-        },  [])
+        },  [users]) // added dependency users
     return (
         <div id="chats-main">
             <div id="chats-main-header">

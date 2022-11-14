@@ -8,7 +8,7 @@ const socket = io('ws://localhost:8000', {auth: {
     }
 })
 
-const HomePage = ({setUserName, socket, setUserNameAlreadySelected}) => {
+const HomePage = ({setUserName, socket, setUserNameAlreadySelected, setUserID}) => {
     const [tab, setTab] = useState('signup')
     return (
         <div>
@@ -17,7 +17,7 @@ const HomePage = ({setUserName, socket, setUserNameAlreadySelected}) => {
                 <button onClick={() => setTab('signin')}>Sign In</button>
                 <button onClick={() => setTab('signup')}>Sign Up</button>
                 <div>
-                    { tab === 'signup' ? < SignUp setUserName={setUserName}/> : <SignIn setUserName={setUserName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected}/> }
+                    { tab === 'signup' ? < SignUp setUserName={setUserName} setUserID={setUserID}/> : <SignIn setUserName={setUserName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} setUserID={setUserID}/> }
                 </div>
             </div>
             

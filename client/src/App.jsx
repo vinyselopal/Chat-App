@@ -21,7 +21,9 @@ const socket = io('ws://localhost:8000', {auth: {
 const App = () => {
     const getUserName = JSON.parse(localStorage.getItem('userName'))
     const getUsers = JSON.parse(localStorage.getItem('users'))
-    const [userName, setUserName] = useState(getUserName)
+    const getUserID = JSON.parse(localStorage.getItem('userID'))
+    const [userName, setUserName] = useState(getUserName || '')
+    const [userID, setUserID] = useState(getUserID || '')
     const [userNameAlreadySelected, setUserNameAlreadySelected] = useState(false)
     const [users, setUsers] = useState(getUsers || [])
     const [currentChat, setCurrentChat] = useState('general')
@@ -41,8 +43,8 @@ const App = () => {
     return (
         <>
         <Routes>
-            <Route path="/" element={<HomePage setUserName={setUserName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} />} />
-            <Route path="/chats" element={<ChatsPage userName={userName} setUserName={setUserName} socket={socket}setUserNameAlreadySelected={setUserNameAlreadySelected} usernameAlreadySelected={userNameAlreadySelected} users={users} setUsers={setUsers} currentChat={currentChat} setCurrentChat={setCurrentChat}/>} />
+            <Route path="/" element={<HomePage setUserID={setUserID} setUserName={setUserName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} />} />
+            <Route path="/chats" element={<ChatsPage userID={userID} setUserID={setUserID} userName={userName} setUserName={setUserName} socket={socket}setUserNameAlreadySelected={setUserNameAlreadySelected} usernameAlreadySelected={userNameAlreadySelected} users={users} setUsers={setUsers} currentChat={currentChat} setCurrentChat={setCurrentChat}/>} />
         </Routes>
             
         {/* {

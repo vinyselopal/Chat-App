@@ -1,8 +1,10 @@
-import {useState} from "react"
+import {useEffect, useState} from "react"
 
 
 function ChatsSidePanel ({ users, userName, socket, setUserNameAlreadySelected, userNameAlreadySelected, currentChat, setCurrentChat }) {
     const [peerIcon, setPeerIcon] = useState(null)
+
+
     function displayPeerIcon (event) {
         if (users.find(a => a.userName === event.target.value)) {
             setPeerIcon(() => event.target.value)

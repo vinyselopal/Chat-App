@@ -26,28 +26,38 @@ const io = socketio(http, {
 
 initDB()
 io.use((socket, next) => {
+  console.log('io middleware')
   const userName = socket.handshake.auth.userName
+  const userID = socket.handshake.auth.userID
   if (!userName) {
     return next(new Error("invalid username"))
   }
   socket.userName = userName
+  socket.userID = userID
   next() 
 })
+let users = [];
+
 io.on('connection', async (socket) => {
   socket.join(socket.id)
   console.log('a user connected', socket.id)
-
-  const users = [];
   for (let [id, socket] of io.of("/").sockets) {
-    if (users.find(a => a.userName === socket.userName)) continue
+    if (users.find(a => a.userName === socket.userName)) {
+      console.log('matched')
+      continue
+    }
     users.push({
-      userID: id,
+      socketID: id,
+      userID: socket.userID, //changed from id to this
       userName: socket.userName,
     })
   } // adding userInfo for searching up in client
+
+  console.log('users', users)
+
   
   io.emit("user connected", {
-    userID: socket.id,
+    userID: socket.userID,
     userName: socket.userName
   })
 
@@ -61,12 +71,14 @@ io.on('connection', async (socket) => {
       from: socket.id
     })
   })
-  socket.on('user disconnected', (userName) => {
-    users.filter(a => a.userName !== userName)
+  socket.on('disconnect', () => {
+    console.log('users on disconnection', users)
+    users = users.filter(a => a.socketID !== socket.id)
+    console.log('users after filter', users, socket.id)
     socket.emit('new users', users)
   })
   socket.on('message', (msg) => {
-
+    console.log('in message')
     insertMessageFn(msg)
     io.emit('message', msg)
   })

@@ -7,7 +7,7 @@ import {
     useNavigate
 } from "react-router-dom"
 
-const SignIn = ({setUserName, socket, setUserNameAlreadySelected}) => {
+const SignIn = ({setUserName, setUserID, socket, setUserNameAlreadySelected}) => {
   const navigate = useNavigate()
     async function loginHandler () {
         const userName = document.getElementById('signin-userName').value
@@ -21,10 +21,13 @@ const SignIn = ({setUserName, socket, setUserNameAlreadySelected}) => {
           })
       
         const creds = await response.json()
+        console.log(creds)
         if (response.status === 200) {
 
           setUserName(() => creds.user_name)
+          setUserID(() => creds.user_id)
           localStorage.setItem('userName', JSON.stringify(creds.user_name))
+          localStorage.setItem('userID', JSON.stringify(creds.user_id))
           navigate('/chats')
 
         } else {

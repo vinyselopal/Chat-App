@@ -6,7 +6,7 @@ function ChatsHeader ({setUserName, socket, userName}) {
         const response = await fetch('http://localhost:8000/api/logout')
         setUserName("")
         localStorage.clear()
-        socket.emit("user disconnected", userName)
+        socket.disconnect()
         navigate('/')
       }
 

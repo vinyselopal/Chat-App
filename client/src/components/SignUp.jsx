@@ -19,7 +19,7 @@ const SignUp = ({setUserName}) => {
           }
         )
         const message = await response.json()
-        if (response.ok) window.location.href = 'http://localhost:8000/static/login_page'
+        if (response.ok) window.location.href = 'http://localhost:3000'
         else {
           document.querySelector('body').innerHTML = message
         }
