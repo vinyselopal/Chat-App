@@ -8,7 +8,6 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
     function setMessage (event) {
         setMyMessage(() => event.target.value)
     } 
-    ``
     function sendGeneralMessage (event) {
         if (event.key !== 'Enter') return
         const timeStamp = new Date()
@@ -64,6 +63,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
     }
     useEffect( () => {
         const getAllChats = JSON.parse(localStorage.getItem('allChats'))
+
         setChats(() => {
             let chatObj = getAllChats ? getAllChats.find(a => a.chatter === currentChat) : null
             return chatObj ? chatObj.chat : []
@@ -83,6 +83,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
 
     useEffect(
         () => {
+                console.log(socket.connected)
                 socket.auth = {userName, userID}
                 setUserNameAlreadySelected(() => true)
 

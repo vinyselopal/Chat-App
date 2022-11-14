@@ -27,9 +27,10 @@ const io = socketio(http, {
 initDB()
 io.use((socket, next) => {
   console.log('io middleware')
-  const userName = socket.handshake.auth.userName
-  const userID = socket.handshake.auth.userID
+  const userName = socket.auth.userName
+  const userID = socket.auth.userID
   if (!userName) {
+    console.log('in error if')
     return next(new Error("invalid username"))
   }
   socket.userName = userName
