@@ -1,4 +1,5 @@
-const { PORT } = require('./config.js')
+// const { PORT } = require('./config.js')
+PORT = process.env.PORT || 8000
 const sessions = require('express-session')
 const path = require('path')
 const cors = require("cors")
