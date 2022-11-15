@@ -1,4 +1,4 @@
-# Supernatural Allegience
+# Supernatural Alliance
 ![A fun depiction of what my app isn't](https://img.favpng.com/24/9/15/social-media-marketing-clip-art-social-network-advertising-png-favpng-AKnf5ZnsrsVWNkZkXjkXTxWuj.jpg)
 ## Content
 1. Features.
