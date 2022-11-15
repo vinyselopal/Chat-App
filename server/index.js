@@ -1,12 +1,11 @@
 // const { PORT } = require('./config.js')
 PORT = process.env.PORT || 8000
+
 const sessions = require('express-session')
 const path = require('path')
 const cors = require("cors")
 const express = require('express')
-const app = express()
 
-const http = require('http').createServer(app)
 const socketio = require('socket.io')
 
 const { initDB } = require('./database/init.js')
@@ -21,6 +20,10 @@ const {
   logoutMiddleware
 } = require('./middlewares.js')
 
+const app = express()
+const http = require('http').createServer(app)
+
+
 const io = socketio(http, {
   cors: { origin: '*' } // need a better fix for cors errors
 })
@@ -28,35 +31,45 @@ const io = socketio(http, {
 initDB()
 io.use((socket, next) => {
   console.log('io middleware')
+
   const userName = socket.handshake.auth.userName
   const userID = socket.handshake.auth.userID
+
   if (!userName) {
-    console.log('in error if')
+    console.log('no userName')
     return next(new Error("invalid username"))
   }
+
   socket.userName = userName
   socket.userID = userID
+
   next() 
 })
+
+// users array stores the list of users will be shared to the client
 let users = [];
 
 io.on('connection', async (socket) => {
-  socket.join(socket.id)
+  socket.join(socket.id) // for private messaging reference
   console.log('a user connected', socket.id)
-  for (let [id, socket] of io.of("/").sockets) {
+
+  for (let [socketID, socket] of io.of("/").sockets) {
+
     if (users.find(a => a.userName === socket.userName)) {
-      console.log('matched')
+
+      console.log('matched, hence skipping the addition')
       continue
+
     }
+
     users.push({
-      socketID: id,
+      socketID,
       userID: socket.userID, //changed from id to this
       userName: socket.userName,
     })
-  } // adding userInfo for searching up in client
+  } 
 
   console.log('users', users)
-
   
   io.emit("user connected", {
     userID: socket.userID,
@@ -64,20 +77,28 @@ io.on('connection', async (socket) => {
   })
 
   socket.emit("users", users)
+
   const messages = await getMessagesFn()
   console.log('messages', messages)
 
-  for (user of users) {
-    const messagesForCurrentUser = messages.filter(msg => msg.user_name === user.userName || msg.recipient === user.userID || msg.room_id === 'general')
-
-    console.log("current user", user, "messagesForCurrentUser", messagesForCurrentUser)
-    socket.to(user.socketID).emit('messages', messagesForCurrentUser, 'hi')
+  // selecting messages to send to each individual users
+  for (user of users) { 
+    
+    // can handle on database
+    const messagesForCurrentUser = messages.filter(
+      msg => msg.user_name === user.userName || 
+      msg.recipient === user.userID || 
+      msg.room_id === 'general'
+    )
+    socket.to(user.socketID).emit('messages', messagesForCurrentUser)
   }
   io.emit('messages', messages)
 
   socket.on("private message", ({content, userID}) => {
-    console.log("priv to", userID)
+    console.log("private message")
+
     to = users.find(a => a.userID ===userID).socketID
+
     socket.to(to).emit("private message", {
       content,
       from: socket.userName
@@ -85,22 +106,30 @@ io.on('connection', async (socket) => {
 
     insertMessageFn(content)
   })
+
   socket.on('disconnect', () => {
-    console.log('users on disconnection', users)
+
+    console.log('socket disconnected')
+
     users = users.filter(a => a.socketID !== socket.id)
-    console.log('users after filter', users, socket.id)
     socket.emit('new users', users)
   })
+
   socket.on('message', (msg) => {
+
     console.log('in message')
+
     insertMessageFn(msg)
-    io.emit('message', msg)
+    io.emit('message', msg) // even to the sender socket
   })
 })
+
+// for allowing cross access to the url
 app.use(cors({
   origin: "http://localhost:3000",
   optionsSuccessStatus: 200
 }))
+
 app.use(sessions({
   secret: 'abc',
   cookie: {
@@ -113,11 +142,17 @@ app.use(sessions({
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-// ----------- deploy ------------- //
+// ----------- heroku deploy ------------- // To serve static build files from client
+
 const _dirname1 = path.resolve()
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(_dirname1, '/client/build')))
-  app.get('*', (req, res) => res.sendFile(path.resolve(_dirname, 'frontend', 'build', 'index.html'))
+  app.get('*', (req, res) => res.sendFile(path.resolve(
+    _dirname, 
+    'frontend', 
+    'build', 
+    'index.html'
+    ))
   )
 } else {
   app.get('/', (req, res) => {
@@ -125,15 +160,7 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
-// ------------- deploy ------------- //
-app.use('/', express.static(path.join(__dirname, '/public/mainPage')))
-
-app.use('/static/login_page', 
-checkLoggedinMiddleware, 
-express.static(path.join(__dirname, '/public/loginPage')))
-
-app.use('/static/room', authMiddleware, express.static(path.join(__dirname, '/public/room')))
-app.use('/static/register_page', express.static(path.join(__dirname, '/public/registerPage')))
+// ------------- heroku deploy ------------- //
 
 app.use('/api/login', loginRouter)
 app.use('/api/register', registerRouter)

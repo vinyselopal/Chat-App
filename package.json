@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.4.3",
-    "react-scripts": "^5.0.1",
-    "socket.io-client": "^4.5.3",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -15,13 +10,18 @@
     "express-session": "^1.17.3",
     "nodemon": "^2.0.20",
     "pg": "^8.8.0",
-    "socket.io": "^4.5.3"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3",
+    "react-scripts": "^5.0.1",
+    "socket.io": "^4.5.3",
+    "socket.io-client": "^4.5.3",
+    "standard": "^17.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm start server/index.js",
     "postinstall": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
-
   },
   "keywords": [],
   "author": "",
