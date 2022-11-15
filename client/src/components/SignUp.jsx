@@ -31,10 +31,10 @@ const SignUp = ({setUserName}) => {
             <input type="text" id="signup-userName"/>
             <label>Password</label>
             <input id="signup-password" name="password" type="password"/>
-            <label>Confirm Password</label>
-            <input id="signup-confirmPassword" name="password" type="password" /><span><button>show</button></span>
-            <label>Upload your picture</label>
-            <input type="file" id="signup-imageUpload" name="imageUpload" />
+            {/* <label>Confirm Password</label>
+            <input id="signup-confirmPassword" name="password" type="password" /><span><button>show</button></span> */}
+            {/* <label>Upload your picture</label> */}
+            {/* <input type="file" id="signup-imageUpload" name="imageUpload" /> */}
             <input type="button" id="signup-submit" onClick={signupHandler} defaultValue="Signup"/>
         </>  
     )
