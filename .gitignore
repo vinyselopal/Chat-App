@@ -1,7 +1,6 @@
 /server/node_modules
-/server/package-lock.json
+/server/package.json
 /notes
-/notes_adv
 /references
-/client/package-lock.json
+/client/package.json
 /client/node_modules
