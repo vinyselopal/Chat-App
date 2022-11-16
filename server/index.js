@@ -61,15 +61,18 @@ io.on('connection', async (socket) => {
     userName: socket.userName
   })
 
-  socket.emit("users", users)
+  io.emit("users", users)
   const messages = await getMessagesFn()
   console.log('messages', messages)
+
+  // hack because on refresh all sockets recieve messages event except the connecting socket 
+  // socket.to(socket.socketID).emit('messages', messages.filter(msg => msg.user_name === socket.userName || msg.recipient === socket.userID || msg.room_id === 'general'))
 
   for (user of users) {
     const messagesForCurrentUser = messages.filter(msg => msg.user_name === user.userName || msg.recipient === user.userID || msg.room_id === 'general')
 
     console.log("current user", user, "messagesForCurrentUser", messagesForCurrentUser)
-    socket.to(user.socketID).emit('messages', messagesForCurrentUser, 'hi')
+    io.to(user.socketID).emit('messages', messagesForCurrentUser, 'hi')
   }
   // io.emit('messages', messages)
 

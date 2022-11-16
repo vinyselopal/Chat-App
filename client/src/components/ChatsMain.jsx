@@ -8,7 +8,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
     function setMessage (event) {
         setMyMessage(() => event.target.value)
     } 
-    ``
+
     function sendGeneralMessage (event) {
         if (event.key !== 'Enter') return
         const timeStamp = new Date()
@@ -131,9 +131,8 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                     const allChats = JSON.parse(localStorage.getItem('allChats'))
                     const getChats = JSON.parse(localStorage.getItem('chats' || []))
                     console.log('message', message)
-                    setChats([...getChats, message])
                     setAllChats((allChats) => { // useEffect only has access to initial state
-                        const general = allChats.find(a => a.chatter === "general")
+                        const general = allChats.find(a => a.chatter === "general") || {chatter: 'general', chat: []}
                         general.chat = [...general.chat, message]
                         return [...allChats]
                     })
