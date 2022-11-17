@@ -42,27 +42,18 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
             room_id: roomID,
             recipient: recipient.userID
         }
-        const chatterName = users.find(a => a.userName === currentChat).userName
         socket.emit('private message', {content: messageObj, userID: recipient.userID})
         
-
         const allChats = JSON.parse(localStorage.getItem('allChats'))
         console.log(allChats)
-        let chatObj = allChats.find(a => a.chatter === chatterName) || {chat: [], chatter: chatterName} // set chatter of all chats
+        let chatObj = allChats.find(a => a.chatter === currentChat) || {chat: [], chatter: currentChat} // set chatter of all chats
         console.log('chatObj', chatObj)
         chatObj = {...chatObj, chat: [...chatObj.chat, messageObj]}
-        const filteredAllChats = allChats.filter(a => a.chatter !== chatterName)
-
-        const preAllChats = [...filteredAllChats, chatObj]
-        console.log('pre changing all chats', preAllChats)
-
-        setAllChats(() => {
-            return preAllChats
-        })
-
-        setChats([...chats, messageObj])
+        const filteredAllChats = allChats.filter(a => a.chatter !== currentChat)
+        setAllChats([...filteredAllChats, chatObj])
         event.target.value = ''
         window.location.reload()
+
     }
     useEffect( () => {
         const getAllChats = JSON.parse(localStorage.getItem('allChats'))
@@ -85,6 +76,8 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
 
     useEffect(
         () => {
+            console.log('currentChat', currentChat)
+
                 socket.auth = {userName, userID}
                 setUserNameAlreadySelected(() => true)
 
@@ -165,7 +158,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                 })
             
                 socket.on('private message', ({content, from}) => {
-                    console.log({content, from})
+                    console.log('priv', {content, from})
                     const users = JSON.parse(localStorage.getItem('users'))
                     console.log(users)
                     const chatterObj = users.find(a => a.userName=== from)
