@@ -36,6 +36,9 @@ io.use((socket, next) => {
   socket.userID = userID
   next() 
 })
+
+  // users array stores the list of users will be shared to the client
+
 let users = [];
 
 io.on('connection', async (socket) => {
@@ -53,6 +56,7 @@ io.on('connection', async (socket) => {
     })
   } // adding userInfo for searching up in client
 
+
   console.log('users', users)
 
   
@@ -62,6 +66,7 @@ io.on('connection', async (socket) => {
   })
 
   io.emit("users", users)
+
   const messages = await getMessagesFn()
   console.log('messages', messages)
 
@@ -69,7 +74,11 @@ io.on('connection', async (socket) => {
   // socket.to(socket.socketID).emit('messages', messages.filter(msg => msg.user_name === socket.userName || msg.recipient === socket.userID || msg.room_id === 'general'))
 
   for (user of users) {
-    const messagesForCurrentUser = messages.filter(msg => msg.user_name === user.userName || msg.recipient === user.userID || msg.room_id === 'general')
+    const messagesForCurrentUser = messages.filter(
+      msg => msg.user_name === user.userName || 
+      msg.recipient === user.userID || 
+      msg.room_id === 'general'
+      )
 
     console.log("current user", user, "messagesForCurrentUser", messagesForCurrentUser)
     io.to(user.socketID).emit('messages', messagesForCurrentUser, 'hi')

@@ -29,6 +29,7 @@ const SignIn = ({setUserName, setUserID, socket, setUserNameAlreadySelected}) =>
           localStorage.setItem('userName', JSON.stringify(creds.user_name))
           localStorage.setItem('userID', JSON.stringify(creds.user_id))
           navigate('/chats')
+          window.location.reload()
 
         } else {
           document.querySelector('body').innerHTML = creds

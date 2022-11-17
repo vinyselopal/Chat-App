@@ -24,6 +24,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
         }
         socket.emit('message', messageObj)
         event.target.value = ''
+        window.location.reload()
     }
     function sendPrivateMessage (event) {
         if (event.key !== 'Enter') return
@@ -61,6 +62,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
 
         setChats([...chats, messageObj])
         event.target.value = ''
+        window.location.reload()
     }
     useEffect( () => {
         const getAllChats = JSON.parse(localStorage.getItem('allChats'))
@@ -148,7 +150,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                         const generalMessages = {chatter: 'general', chat: messages.filter(a => a.room_id === 'general')}
                         const restMessages = messages.filter(a => a.room_id !== 'general')
                         const tempArr = []
-                        for (let message of messages) {
+                        for (let message of restMessages) {
                             const chatterObj = tempArr.find(obj => obj.chatter === message.user_name)
                             if (chatterObj) chatterObj.chat.push(message)
                             else tempArr.push({chatter: message.user_name, chat: [message]})
@@ -160,7 +162,6 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                     else {
                         setAllChats((allChats) => [...allChats, {chatter: 'general', chat: messages}])
                     }
-                    
                 })
             
                 socket.on('private message', ({content, from}) => {
