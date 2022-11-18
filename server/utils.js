@@ -8,7 +8,9 @@ async function validateUserName (user_name) {
 }
 
 function validatePassword (password) {
-  if (password.length < 8) return 'invalid' // semantic meaning not the job
+  // if (password.length < 8) return 'password too short' 
+  const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+  if (!regex.test(password)) return 'password invalid' // semantic meaning not the job
   return 'valid'
 }
 async function validateUserName (user_name) {

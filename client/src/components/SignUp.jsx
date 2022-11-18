@@ -10,6 +10,13 @@ const SignUp = ({setUserName}) => {
     async function signupHandler (event) {
         const userName = document.getElementById('signup-userName').value
         const password = document.getElementById('signup-password').value
+        const confirmPassword = document.getElementById('signup-confirmPassword').value
+
+        if (password !== confirmPassword)  {
+          document.querySelector('body').innerHTML = 'passwords dont match'
+          return 
+        }
+
         const response = await fetch(
           'http://localhost:8000/api/register',
           {
@@ -33,8 +40,8 @@ const SignUp = ({setUserName}) => {
             <input id="signup-password" name="password" type="password"/>
             <label>Confirm Password</label>
             <input id="signup-confirmPassword" name="password" type="password" /><span><button>show</button></span>
-            <label>Upload your picture</label>
-            <input type="file" id="signup-imageUpload" name="imageUpload" />
+            {/* <label>Upload your picture</label> */}
+            {/* <input type="file" id="signup-imageUpload" name="imageUpload" /> */}
             <input type="button" id="signup-submit" onClick={signupHandler} defaultValue="Signup"/>
         </>  
     )
