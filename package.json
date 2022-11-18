@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/vinyselopal/chatApp2/issues"
   },
-  "homepage": "https://github.com/vinyselopal/chatApp2#readme"
+  "homepage": "https://github.com/vinyselopal/chatApp2#readme",
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1"
+  }
 }

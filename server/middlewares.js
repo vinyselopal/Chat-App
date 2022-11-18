@@ -1,3 +1,5 @@
+require('dotenv').config()
+const jwt =  require('jsonwebtoken')
 function authMiddleware (req, res, next) {
   if (req.session.userName) {
     console.log(req.session)
@@ -23,4 +25,21 @@ function logoutMiddleware (req, res, next) {
   res.end()
 }
 
-module.exports = { authMiddleware, checkLoggedinMiddleware, logoutMiddleware }
+function jwtAuthMiddleware (socket, next) {
+  console.log('in jwt mw: socket.handshake.auth.token', socket.handshake.auth.token)
+  if (socket.handshake.auth.token) {
+    jwt.verify(socket.handshake.auth.token, process.env.ACCESS_TOKEN, function (err, decoded) {
+      if (err) {
+        return next(new Error('Authentication error'))
+
+      }
+      console.log('not in err', decoded)
+
+      socket.userName = decoded.user_name
+      socket.userID = decoded.user_id
+      next()
+    })
+  }
+}
+
+module.exports = { authMiddleware, checkLoggedinMiddleware, logoutMiddleware, jwtAuthMiddleware }

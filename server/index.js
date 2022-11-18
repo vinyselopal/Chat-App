@@ -1,5 +1,5 @@
 const { PORT } = require('./config.js')
-const sessions = require('express-session')
+// const sessions = require('express-session')
 const path = require('path')
 const cors = require("cors")
 const express = require('express')
@@ -17,7 +17,8 @@ const { getMessagesFn, insertMessageFn } = require('./utils')
 const {
   authMiddleware,
   checkLoggedinMiddleware,
-  logoutMiddleware
+  logoutMiddleware,
+  jwtAuthMiddleware
 } = require('./middlewares.js')
 
 const io = socketio(http, {
@@ -25,13 +26,16 @@ const io = socketio(http, {
 })
 
 initDB()
+io.use( jwtAuthMiddleware )
 io.use((socket, next) => {
   console.log('io middleware')
-  const userName = socket.handshake.auth.userName
-  const userID = socket.handshake.auth.userID
+  const userName = socket.userName
+  const userID = socket.userID
   if (!userName) {
+    console.log(' in err')
     return next(new Error("invalid username"))
   }
+  console.log('after io mw')
   socket.userName = userName
   socket.userID = userID
   next() 
@@ -111,14 +115,14 @@ app.use(cors({
   origin: "http://localhost:3000",
   optionsSuccessStatus: 200
 }))
-app.use(sessions({
-  secret: 'abc',
-  cookie: {
-    maxAge: 3600000
-  },
-  resave: true,
-  saveUninitialized: false
-}))
+// app.use(sessions({
+//   secret: 'abc',
+//   cookie: {
+//     maxAge: 3600000
+//   },
+//   resave: true,
+//   saveUninitialized: false
+// }))
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))

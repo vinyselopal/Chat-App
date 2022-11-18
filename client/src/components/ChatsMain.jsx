@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react"
 
 
-function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelected, setUserNameAlreadySelected, users, setUsers, currentChat, setCurrentChat}) {
+function ChatsMain ({token, setToken, userID, setUserID, userName, socket, userNameAlreadySelected, setUserNameAlreadySelected, users, setUsers, currentChat, setCurrentChat}) {
     const [allChats, setAllChats] = useState(JSON.parse(localStorage.getItem('allChats')) || [])
     const [chats, setChats] = useState([])
     const [myMessage, setMyMessage] = useState('')
@@ -76,23 +76,25 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
 
     useEffect(
         () => {
-            console.log('currentChat', currentChat)
+            console.log('sunas', userNameAlreadySelected, 'token', token)
 
-                socket.auth = {userName, userID}
-                setUserNameAlreadySelected(() => true)
-
-                socket.connect("connect_error", (error) => {
+            if (userNameAlreadySelected || token) {
+                console.log('token when suas is true', token)
+                socket.auth = {token}
+                socket.connect()
+                
+            }
+            socket.on("connect", () => {
+                console.log('socket connected')
+                const transport = socket.io.engine.transport.name; // in most cases, "polling"
+                console.log('transport', transport)
+                socket.io.engine.on("upgrade", () => {
+                    const upgradedTransport = socket.io.engine.transport.name; // in most cases, "websocket"
+                    console.log('upgradedTransport', upgradedTransport)
                 })
-
-                socket.on("connect", () => {
-                    console.log('socket connected')
-                    const transport = socket.io.engine.transport.name; // in most cases, "polling"
-                    console.log('transport', transport)
-                    socket.io.engine.on("upgrade", () => {
-                        const upgradedTransport = socket.io.engine.transport.name; // in most cases, "websocket"
-                        console.log('upgradedTransport', upgradedTransport)
-                    })
-                })
+            })
+            
+                
 
                 socket.on("disconnect", (reason) => {
                     console.log('Socket disconnect due to:', reason)
@@ -191,7 +193,7 @@ function ChatsMain ({userID, setUserID, userName, socket, userNameAlreadySelecte
                 socket.off('connect_error')
                 socket.off('disconnect')
             }
-        },  [users]) // added dependency users
+        },  [users, userNameAlreadySelected]) // added dependency users
     return (
         <div id="chats-main">
             <div id="chats-main-header">

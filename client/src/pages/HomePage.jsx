@@ -3,12 +3,8 @@ import io from "socket.io-client"
 import { useNavigate } from "react-router-dom"
 import SignIn from "../components/SignIn"
 import SignUp from "../components/SignUp"
-const socket = io('ws://localhost:8000', {auth: {
-    token: '123'
-    }
-})
 
-const HomePage = ({setUserName, socket, setUserNameAlreadySelected, setUserID}) => {
+const HomePage = ({token, setToken, setUserName, socket, setUserNameAlreadySelected, setUserID}) => {
     const [tab, setTab] = useState('signup')
     return (
         <div>
@@ -17,7 +13,7 @@ const HomePage = ({setUserName, socket, setUserNameAlreadySelected, setUserID}) 
                 <button onClick={() => setTab('signin')}>Sign In</button>
                 <button onClick={() => setTab('signup')}>Sign Up</button>
                 <div>
-                    { tab === 'signup' ? < SignUp setUserName={setUserName} setUserID={setUserID}/> : <SignIn setUserName={setUserName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} setUserID={setUserID}/> }
+                    { tab === 'signup' ? < SignUp token={token} setToken={setToken} setUserName={setUserName} setUserID={setUserID}/> : <SignIn token={token} setToken={setToken} setUserName={setUserName} socket={socket} setUserNameAlreadySelected={setUserNameAlreadySelected} setUserID={setUserID}/> }
                 </div>
             </div>
             
